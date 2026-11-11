@@ -1,0 +1,16 @@
+# Local Postgres for development. `docker compose up -d` then point
+# DATABASE_URL at it (the default in backend/.env.example already matches).
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: verdant
+      POSTGRES_PASSWORD: verdant
+      POSTGRES_DB: verdant
+    ports:
+      - "5432:5432"
+    volumes:
+      - verdant_pgdata:/var/lib/postgresql/data
+
+volumes:
+  verdant_pgdata:
