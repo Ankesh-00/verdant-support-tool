@@ -6,9 +6,14 @@ brand's knowledge base, and a signed-in agent reviews, edits, and approves it.
 
 **Stack:** React (Vite) · FastAPI · PostgreSQL (SQLAlchemy) · Groq (`openai/gpt-oss-120b`).
 
-- **Deployed app:** `<add your frontend URL>`
-- **Webhook endpoint:** `<backend URL>/webhook`
-- **Agent login:** `agent` / `verdant123` (override with `SEED_AGENT_*`)
+- **Deployed app:** https://verdant-support-tool.vercel.app
+- **Webhook endpoint:** `https://verdant-support-tool.onrender.com/webhook`
+- **Backend / API:** https://verdant-support-tool.onrender.com (health: `/health`)
+- **Agent login:** `agent` / `verdant123`
+
+> Hosting note: the backend runs on Render's free tier, which sleeps after
+> ~15 min idle. The first request may take ~50s to wake it; subsequent requests
+> are fast. The free Postgres is retained for 30 days.
 
 ## Run locally
 
@@ -39,7 +44,9 @@ npm run dev                  # http://localhost:5173
 **4. Send a webhook test** (correctly HMAC-signed):
 ```bash
 cd backend
-python send_webhook.py "What is your return policy?"
+python send_webhook.py "What is your return policy?"            # local
+# against the live deployment:
+python send_webhook.py "Do you deliver to Dubai?" --url https://verdant-support-tool.onrender.com/webhook
 ```
 
 ## How it works end to end
@@ -65,6 +72,10 @@ Switch back to Customer → the approved reply appears (drafts never do).
   double-draft. IDs are string UUIDs so the schema runs on Postgres or SQLite.
 - **Cut for time:** tests beyond manual, Alembic migrations (tables auto-create),
   draft regeneration button, pagination, and polished design.
+- **Known limitation:** if a customer sends several messages before the agent
+  replies, the agent only sees the draft for the latest one, and it isn't labelled
+  with the message it answers. First thing I'd improve: show each draft against the
+  message it replies to (or draft once against all unanswered messages).
 
 ## Where AI helped — and got something wrong
 AI (Claude) scaffolded the FastAPI routers, the React components, and the SQLAlchemy
